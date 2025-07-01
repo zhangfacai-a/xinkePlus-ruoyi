@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LiveRoomsMapper">
+    
+    <resultMap type="LiveRooms" id="LiveRoomsResult">
+        <result property="id"    column="id"    />
+        <result property="roomName"    column="room_name"    />
+    </resultMap>
+
+    <sql id="selectLiveRoomsVo">
+        select id, room_name from live_rooms
+    </sql>
+
+    <select id="selectLiveRoomsList" parameterType="LiveRooms" resultMap="LiveRoomsResult">
+        <include refid="selectLiveRoomsVo"/>
+        <where>  
+            <if test="roomName != null  and roomName != ''"> and room_name like concat('%', #{roomName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectLiveRoomsById" parameterType="Long" resultMap="LiveRoomsResult">
+        <include refid="selectLiveRoomsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertLiveRooms" parameterType="LiveRooms" useGeneratedKeys="true" keyProperty="id">
+        insert into live_rooms
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roomName != null">room_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roomName != null">#{roomName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLiveRooms" parameterType="LiveRooms">
+        update live_rooms
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roomName != null">room_name = #{roomName},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLiveRoomsById" parameterType="Long">
+        delete from live_rooms where id = #{id}
+    </delete>
+
+    <delete id="deleteLiveRoomsByIds" parameterType="String">
+        delete from live_rooms where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

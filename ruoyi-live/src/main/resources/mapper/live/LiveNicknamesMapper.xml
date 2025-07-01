@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LiveNicknamesMapper">
+    
+    <resultMap type="LiveNicknames" id="LiveNicknamesResult">
+        <result property="id"    column="id"    />
+        <result property="nickname"    column="nickname"    />
+    </resultMap>
+
+    <sql id="selectLiveNicknamesVo">
+        select id, nickname from live_nicknames
+    </sql>
+
+    <select id="selectLiveNicknamesList" parameterType="LiveNicknames" resultMap="LiveNicknamesResult">
+        <include refid="selectLiveNicknamesVo"/>
+        <where>  
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectLiveNicknamesById" parameterType="Long" resultMap="LiveNicknamesResult">
+        <include refid="selectLiveNicknamesVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertLiveNicknames" parameterType="LiveNicknames" useGeneratedKeys="true" keyProperty="id">
+        insert into live_nicknames
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="nickname != null">nickname,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="nickname != null">#{nickname},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLiveNicknames" parameterType="LiveNicknames">
+        update live_nicknames
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="nickname != null">nickname = #{nickname},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLiveNicknamesById" parameterType="Long">
+        delete from live_nicknames where id = #{id}
+    </delete>
+
+    <delete id="deleteLiveNicknamesByIds" parameterType="String">
+        delete from live_nicknames where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

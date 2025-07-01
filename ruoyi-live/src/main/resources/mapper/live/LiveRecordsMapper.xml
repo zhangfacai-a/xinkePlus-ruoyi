@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LiveRecordsMapper">
+
+    <!-- 使用 LiveRecordsVo 作为结果映射 -->
+    <resultMap id="LiveRecordsVoResult" type="com.ruoyi.system.vo.LiveRecordsVo">
+        <id property="id" column="id"/>
+        <result property="submitTime" column="submit_time"/>
+        <result property="fillId" column="fill_id"/>
+        <result property="answerTime" column="answer_time"/>
+        <result property="nicknameId" column="nickname_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="roomId" column="room_id"/>
+        <result property="roomName" column="room_name"/>
+        <result property="liveDate" column="live_date"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="liveMinutes" column="live_minutes"/>
+        <result property="offlineMinutes" column="offline_minutes"/>
+        <result property="totalViewers" column="total_viewers"/>
+        <result property="roomViewers" column="room_viewers"/>
+        <result property="dealUsers" column="deal_users"/>
+        <result property="salesAmount" column="sales_amount"/>
+        <result property="exposure" column="exposure"/>
+        <result property="anchorExposure" column="anchor_exposure"/>
+        <result property="newFollowers" column="new_followers"/>
+        <result property="remark" column="remark"/>
+        <result property="totalDeals" column="total_deals"/>
+    </resultMap>
+
+    <!-- 可复用查询语句 -->
+    <sql id="selectLiveRecordsVo">
+        SELECT
+            lr.id,
+            lr.submit_time AS submit_time,
+            lr.fill_id AS fill_id,
+            lr.answer_time AS answer_time,
+
+            lr.nickname_id AS nickname_id,
+            ln.nickname AS nickname,
+
+            lr.room_id AS room_id,
+            rn.room_name AS room_name,
+
+            lr.live_date AS live_date,
+            lr.start_time AS start_time,
+            lr.end_time AS end_time,
+            lr.live_minutes AS live_minutes,
+            lr.offline_minutes AS offline_minutes,
+            lr.total_viewers AS total_viewers,
+            lr.room_viewers AS room_viewers,
+            lr.deal_users AS deal_users,
+            lr.sales_amount AS sales_amount,
+            lr.exposure AS exposure,
+            lr.anchor_exposure AS anchor_exposure,
+            lr.new_followers AS new_followers,
+            lr.remark AS remark,
+            lr.total_deals AS total_deals
+        FROM live_records lr
+                 LEFT JOIN live_nicknames ln ON lr.nickname_id = ln.id
+                 LEFT JOIN live_rooms rn ON lr.room_id = rn.id
+    </sql>
+
+    <!-- 查询列表 -->
+    <select id="selectLiveRecordsList" parameterType="com.ruoyi.system.vo.LiveRecordsVo" resultMap="LiveRecordsVoResult">
+        <include refid="selectLiveRecordsVo"/>
+        <where>
+            <!-- 主播昵称模糊搜索 -->
+            <if test="nickname != null and nickname != ''">
+                AND ln.nickname LIKE CONCAT('%', #{nickname}, '%')
+            </if>
+            <!-- 直播间模糊搜索 -->
+            <if test="room != null and room != ''">
+                AND rn.room_name LIKE CONCAT('%', #{room}, '%')
+            </if>
+            <!-- 直播日期范围（时间戳，秒） -->
+            <if test="startTime != null and endTime != null">
+                AND lr.live_date BETWEEN #{startTime} AND #{endTime}
+            </if>
+            <!-- 其它条件（保留你已有的） -->
+            <if test="submitTime != null"> AND lr.submit_time = #{submitTime} </if>
+            <if test="fillId != null and fillId != ''"> AND lr.fill_id = #{fillId} </if>
+            <if test="answerTime != null"> AND lr.answer_time = #{answerTime} </if>
+            <if test="nicknameId != null"> AND lr.nickname_id = #{nicknameId} </if>
+            <if test="roomId != null"> AND lr.room_id = #{roomId} </if>
+            <if test="liveDate != null"> AND lr.live_date = #{liveDate} </if>
+            <if test="startTime != null and endTime == null"> AND lr.live_date &gt;= #{startTime} </if>
+            <if test="endTime != null and startTime == null"> AND lr.live_date &lt;= #{endTime} </if>
+            <if test="liveMinutes != null"> AND lr.live_minutes = #{liveMinutes} </if>
+            <if test="offlineMinutes != null"> AND lr.offline_minutes = #{offlineMinutes} </if>
+            <if test="totalViewers != null"> AND lr.total_viewers = #{totalViewers} </if>
+            <if test="roomViewers != null"> AND lr.room_viewers = #{roomViewers} </if>
+            <if test="dealUsers != null"> AND lr.deal_users = #{dealUsers} </if>
+            <if test="salesAmount != null"> AND lr.sales_amount = #{salesAmount} </if>
+            <if test="exposure != null"> AND lr.exposure = #{exposure} </if>
+            <if test="anchorExposure != null"> AND lr.anchor_exposure = #{anchorExposure} </if>
+            <if test="newFollowers != null"> AND lr.new_followers = #{newFollowers} </if>
+            <if test="totalDeals != null"> AND lr.total_deals = #{totalDeals} </if>
+        </where>
+    </select>
+
+    <!-- 按 ID 查询 -->
+    <select id="selectLiveRecordsById" parameterType="Long" resultMap="LiveRecordsVoResult">
+        <include refid="selectLiveRecordsVo"/>
+        WHERE lr.id = #{id}
+    </select>
+
+    <!-- 插入记录 -->
+    <insert id="insertLiveRecords" parameterType="com.ruoyi.system.domain.LiveRecords" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO live_records (
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="submitTime != null">submit_time,</if>
+            <if test="fillId != null and fillId != ''">fill_id,</if>
+            <if test="answerTime != null">answer_time,</if>
+            <if test="nicknameId != null">nickname_id,</if>
+            <if test="roomId != null">room_id,</if>
+            <if test="liveDate != null">live_date,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="liveMinutes != null">live_minutes,</if>
+            <if test="offlineMinutes != null">offline_minutes,</if>
+            <if test="totalViewers != null">total_viewers,</if>
+            <if test="roomViewers != null">room_viewers,</if>
+            <if test="dealUsers != null">deal_users,</if>
+            <if test="salesAmount != null">sales_amount,</if>
+            <if test="exposure != null">exposure,</if>
+            <if test="anchorExposure != null">anchor_exposure,</if>
+            <if test="newFollowers != null">new_followers,</if>
+            <if test="remark != null">remark,</if>
+            <if test="totalDeals != null">total_deals,</if>
+        </trim>
+        )
+        VALUES (
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="submitTime != null">#{submitTime},</if>
+            <if test="fillId != null and fillId != ''">#{fillId},</if>
+            <if test="answerTime != null">#{answerTime},</if>
+            <if test="nicknameId != null">#{nicknameId},</if>
+            <if test="roomId != null">#{roomId},</if>
+            <if test="liveDate != null">#{liveDate},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="liveMinutes != null">#{liveMinutes},</if>
+            <if test="offlineMinutes != null">#{offlineMinutes},</if>
+            <if test="totalViewers != null">#{totalViewers},</if>
+            <if test="roomViewers != null">#{roomViewers},</if>
+            <if test="dealUsers != null">#{dealUsers},</if>
+            <if test="salesAmount != null">#{salesAmount},</if>
+            <if test="exposure != null">#{exposure},</if>
+            <if test="anchorExposure != null">#{anchorExposure},</if>
+            <if test="newFollowers != null">#{newFollowers},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="totalDeals != null">#{totalDeals},</if>
+        </trim>
+        )
+    </insert>
+
+    <!-- 更新记录 -->
+    <update id="updateLiveRecords" parameterType="com.ruoyi.system.domain.LiveRecords">
+        UPDATE live_records
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="submitTime != null">submit_time = #{submitTime},</if>
+            <if test="fillId != null and fillId != ''">fill_id = #{fillId},</if>
+            <if test="answerTime != null">answer_time = #{answerTime},</if>
+            <if test="nicknameId != null">nickname_id = #{nicknameId},</if>
+            <if test="roomId != null">room_id = #{roomId},</if>
+            <if test="liveDate != null">live_date = #{liveDate},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="liveMinutes != null">live_minutes = #{liveMinutes},</if>
+            <if test="offlineMinutes != null">offline_minutes = #{offlineMinutes},</if>
+            <if test="totalViewers != null">total_viewers = #{totalViewers},</if>
+            <if test="roomViewers != null">room_viewers = #{roomViewers},</if>
+            <if test="dealUsers != null">deal_users = #{dealUsers},</if>
+            <if test="salesAmount != null">sales_amount = #{salesAmount},</if>
+            <if test="exposure != null">exposure = #{exposure},</if>
+            <if test="anchorExposure != null">anchor_exposure = #{anchorExposure},</if>
+            <if test="newFollowers != null">new_followers = #{newFollowers},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="totalDeals != null">total_deals = #{totalDeals},</if>
+        </trim>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="deleteLiveRecordsById" parameterType="Long">
+        DELETE FROM live_records WHERE id = #{id}
+    </delete>
+
+    <!-- 批量删除记录 -->
+    <delete id="deleteLiveRecordsByIds" parameterType="String">
+        DELETE FROM live_records
+        WHERE id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

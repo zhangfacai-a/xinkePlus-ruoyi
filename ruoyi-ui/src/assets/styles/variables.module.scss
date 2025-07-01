@@ -1,0 +1,124 @@
+// base color（绿色主题）
+$blue: #18b564; // 主色绿
+$light-blue: #52d18e; // 浅绿
+$red: #C03639;
+$pink: #E65D6E;
+$green: #18b564; // 全局主色
+$tiffany: #4AB7BD;
+$yellow: #FEC171;
+$panGreen: #67c23a; // 备用主色绿
+
+// 默认主题变量（亮色模式绿色主题）
+$menuBg: #f6faf7; // 侧边栏主背景：淡绿色灰
+$menuText: #156441; // 侧边栏文字：深绿色
+$menuActiveText: #18b564; // 侧边栏激活：主色绿
+$menuHover: #e5f7ed; // 侧边栏hover：更浅的绿灰
+$base-menu-background: #f6faf7; // 侧栏背景
+$base-menu-color: #156441;
+$base-menu-color-active: #18b564;
+$base-sub-menu-background: #f6faf7;
+$base-sub-menu-hover: #e5f7ed;
+
+// 浅色主题
+$menuLightBg: #f6f8fa;
+$menuLightHover: #e8f8ee;
+$menuLightText: #303133;
+$menuLightActiveText: #18b564;
+
+// 基础变量
+$base-sidebar-width: 200px;
+$sideBarWidth: 200px;
+
+// 菜单暗色变量（保持原生RuoYi配色）
+$base-menu-color-dark: #bfcbd9;
+$base-menu-color-active-dark: #f4f4f5;
+$base-menu-background-dark: #304156;
+$base-sub-menu-background-dark: #1f2d3d;
+$base-sub-menu-hover-dark: #001528;
+
+// 组件变量
+$--color-primary: #18b564;
+$--color-success: #52d18e;
+$--color-warning: #faad14;
+$--color-danger: #ee4d3d;
+$--color-info: #1890ff;
+
+// :export 保持不变，兼容原项目的 js/scss/less 变量调用
+:export {
+  menuText: $menuText;
+  menuActiveText: $menuActiveText;
+  menuBg: $menuBg;
+  menuHover: $menuHover;
+  menuLightBg: $menuLightBg;
+  menuLightHover: $menuLightHover;
+  menuLightText: $menuLightText;
+  menuLightActiveText: $menuLightActiveText;
+  sideBarWidth: $sideBarWidth;
+  blue: $blue;
+  lightBlue: $light-blue;
+  red: $red;
+  pink: $pink;
+  green: $green;
+  tiffany: $tiffany;
+  yellow: $yellow;
+  panGreen: $panGreen;
+  colorPrimary: $--color-primary;
+  colorSuccess: $--color-success;
+  colorWarning: $--color-warning;
+  colorDanger: $--color-danger;
+  colorInfo: $--color-info;
+}
+
+// 亮色模式 CSS变量定义（绿色主题）
+:root {
+  --sidebar-bg: #f6faf7;
+  --sidebar-text: #156441;
+  --menu-hover: #e5f7ed;
+  --navbar-bg: #ffffff;
+  --navbar-text: #303133;
+  --el-color-primary: #18b564;
+  --el-color-primary-dark-2: #129251;
+  --el-color-primary-light-3: #52d18e;
+  --el-color-primary-light-5: #b5e9cb;
+  --el-color-primary-light-7: #e8f8ee;
+  --el-color-primary-light-8: #f6f8fa;
+  --splitpanes-default-bg: #ffffff;
+}
+
+// 暗色模式 CSS变量定义（保持原RuoYi风格）
+html.dark {
+  --el-bg-color: #141414;
+  --el-bg-color-overlay: #1d1e1f;
+  --el-text-color-primary: #ffffff;
+  --el-text-color-regular: #d0d0d0;
+  --el-border-color: #434343;
+  --el-border-color-light: #434343;
+
+  --sidebar-bg: #141414;
+  --sidebar-text: #ffffff;
+  --menu-hover: #2d2d2d;
+  --menu-active-text: #18b564;
+
+  --navbar-bg: #141414;
+  --navbar-text: #ffffff;
+  --navbar-hover: #141414;
+
+  --tags-bg: #141414;
+  --tags-item-bg: #1d1e1f;
+  --tags-item-border: #303030;
+  --tags-item-text: #d0d0d0;
+  --tags-item-hover: #2d2d2d;
+  --tags-close-hover: #64666a;
+
+  --splitpanes-bg: #141414;
+  --splitpanes-border: #303030;
+  --splitpanes-splitter-bg: #1d1e1f;
+  --splitpanes-splitter-hover-bg: #2d2d2d;
+
+  --blockquote-bg: #1d1e1f;
+  --blockquote-border: #303030;
+  --blockquote-text: #d0d0d0;
+
+  --cron-border: #303030;
+  --splitpanes-default-bg: #141414;
+}
