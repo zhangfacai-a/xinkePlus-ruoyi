@@ -3,20 +3,20 @@
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
         <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 v-else class="sidebar-title">{{ title }}</h1>
+        <h1 v-else class="sidebar-title" :style="titleStyle">{{ title }}</h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
         <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 class="sidebar-title">{{ title }}</h1>
+        <h1 class="sidebar-title" :style="titleStyle">{{ title }}</h1>
       </router-link>
     </transition>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import logo from '@/assets/logo/logo.png'
 import useSettingsStore from '@/store/modules/settings'
-import variables from '@/assets/styles/variables.module.scss'
 
 defineProps({
   collapse: {
@@ -27,22 +27,12 @@ defineProps({
 
 const title = import.meta.env.VITE_APP_TITLE
 const settingsStore = useSettingsStore()
-const sideTheme = computed(() => settingsStore.sideTheme)
 
-// 获取Logo背景色
-const getLogoBackground = computed(() => {
-  if (settingsStore.isDark) {
-    return 'var(--sidebar-bg)'
+// 只判断暗色/亮色，字体色直接写死
+const titleStyle = computed(() => {
+  return {
+    color: settingsStore.isDark ? '#fff' : '#222', // 亮色用深灰更美观
   }
-  return sideTheme.value === 'theme-dark' ? variables.menuBg : variables.menuLightBg
-})
-
-// 获取Logo文字颜色
-const getLogoTextColor = computed(() => {
-  if (settingsStore.isDark) {
-    return 'var(--sidebar-text)'
-  }
-  return sideTheme.value === 'theme-dark' ? '#fff' : variables.menuLightText
 })
 </script>
 
@@ -61,7 +51,7 @@ const getLogoTextColor = computed(() => {
   width: 100%;
   height: 50px;
   line-height: 50px;
-  background: v-bind(getLogoBackground);
+  background: var(--sidebar-bg);
   text-align: center;
   overflow: hidden;
 
@@ -79,12 +69,12 @@ const getLogoTextColor = computed(() => {
     & .sidebar-title {
       display: inline-block;
       margin: 0;
-      color: v-bind(getLogoTextColor);
       font-weight: 600;
       line-height: 50px;
       font-size: 14px;
       font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
       vertical-align: middle;
+      transition: color .2s;
     }
   }
 

@@ -1,7 +1,24 @@
 @use './variables.module.scss' as vars;
 
-#app {
+// 统一菜单内容布局（让图标和文字同一个flex内，防止hover/active分割）
+.sidebar-menu-flex {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
 
+// 修正标题
+.menu-title {
+  padding-left: 4px;
+  background: none !important;
+  font-size: 16px;
+  line-height: 1;
+  display: inline-block;
+  transition: color .18s, font-weight .18s, background .18s;
+}
+
+#app {
   .main-container {
     min-height: 100%;
     transition: margin-left .28s;
@@ -24,33 +41,114 @@
     left: 0;
     z-index: 1001;
     overflow: hidden;
-    -webkit-box-shadow: 2px 0 6px rgba(0, 21, 41, .35);
     box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
-
-    // --------- 统一亮/暗模式背景 -----------
     background: var(--sidebar-bg);
 
-    // reset element-ui css
     .horizontal-collapse-transition {
       transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out;
     }
 
     .scrollbar-wrapper {
       overflow-x: hidden !important;
-      background: var(--sidebar-bg); // 兼容
+      background: var(--sidebar-bg);
     }
 
-    .el-scrollbar__bar.is-vertical {
-      right: 0px;
-    }
-
-    .el-scrollbar {
+    .el-menu {
+      border: none;
       height: 100%;
-    }
+      width: 100% !important;
+      background: var(--sidebar-bg) !important;
+      color: var(--sidebar-text);
 
-    &.has-logo {
-      .el-scrollbar {
-        height: calc(100% - 50px);
+      // 统一菜单项样式
+      .el-menu-item,
+      .el-sub-menu__title {
+        position: relative;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        background: none !important;
+        color: var(--sidebar-text);
+        z-index: 1;
+        transition: color .18s, font-weight .18s;
+
+        // 全宽背景块
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          background: transparent;
+          z-index: -1;
+          transition: background .18s;
+        }
+
+        // 悬浮未激活项
+        &:not(.is-active):hover::before {
+          background: var(--menu-hover, #e5f7ed);
+        }
+
+        // 激活项背景
+        &.is-active::before {
+          background: #95d475 !important;
+        }
+
+        // 激活项悬浮也保持激活色
+        &.is-active:hover::before {
+          background: #95d475 !important;
+        }
+
+        &:hover,
+        &.is-active {
+          background: none !important;
+        }
+
+        &.is-active {
+          color: #198754 !important;
+          font-weight: bold;
+        }
+      }
+
+      // 子菜单
+      .el-sub-menu .el-menu-item,
+      .nest-menu .el-sub-menu__title {
+        position: relative;
+        min-width: vars.$base-sidebar-width !important;
+        color: var(--sidebar-text);
+        background: none !important;
+
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          background: transparent;
+          z-index: -1;
+          transition: background .18s;
+        }
+
+        &:not(.is-active):hover::before {
+          background: var(--menu-hover, #e5f7ed);
+        }
+
+        &.is-active::before,
+        &.is-active:hover::before {
+          background: #95d475 !important;
+        }
+
+        &:hover,
+        &.is-active {
+          background: none !important;
+        }
+
+        &.is-active {
+          color: #198754 !important;
+          font-weight: bold;
+        }
       }
     }
 
@@ -68,74 +166,12 @@
       margin-right: 16px;
     }
 
-    .el-menu {
-      border: none;
-      height: 100%;
-      width: 100% !important;
-      background: var(--sidebar-bg) !important;
-      color: var(--sidebar-text);
-
-      // 一级菜单项和分组标题
-      .el-menu-item,
-      .menu-title {
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        white-space: nowrap !important;
-        background: var(--sidebar-bg) !important;
-        color: var(--sidebar-text);
-
-        &.is-active {
-          color: var(--menu-active-text, #18b564) !important;
-          background: var(--menu-hover, #e5f7ed) !important;
-        }
-
-        &:hover {
-          background: var(--menu-hover, #e5f7ed) !important;
-        }
-      }
-
-      // 二级菜单
-      .el-sub-menu__title {
-        background: var(--sidebar-bg) !important;
-        color: var(--sidebar-text);
-
-        &:hover {
-          background: var(--menu-hover, #e5f7ed) !important;
-        }
-      }
-
-      .el-menu-item .el-menu-tooltip__trigger {
-        display: inline-block !important;
-      }
-    }
-
-    // 嵌套子菜单背景与主菜单保持一致
-    & .nest-menu .el-sub-menu>.el-sub-menu__title,
-    & .el-sub-menu .el-menu-item {
-      min-width: vars.$base-sidebar-width !important;
-      background: var(--sidebar-bg) !important;
-      color: var(--sidebar-text);
-
-      &:hover {
-        background: var(--menu-hover, #e5f7ed) !important;
-      }
-    }
-
-    // 暗色模式下菜单高亮可调整
-    & .theme-dark .is-active>.el-sub-menu__title {
-      color: var(--menu-active-text, #18b564) !important;
-    }
-
-    & .theme-dark .nest-menu .el-sub-menu>.el-sub-menu__title,
-    & .theme-dark .el-sub-menu .el-menu-item {
-      background: var(--sidebar-bg) !important;
-
-      &:hover {
-        background: var(--menu-hover, #2d2d2d) !important;
-      }
+    .el-menu-item .el-menu-tooltip__trigger {
+      display: inline-block !important;
     }
   }
 
+  // 侧边栏收起
   .hideSidebar {
     .sidebar-container {
       width: 54px !important;
@@ -191,7 +227,7 @@
     min-width: vars.$base-sidebar-width !important;
   }
 
-  // mobile responsive
+  // 移动端响应
   .mobile {
     .main-container {
       margin-left: 0px;
@@ -220,22 +256,21 @@
   }
 }
 
-// when menu collapsed
+// 子菜单悬浮
 .el-menu--vertical {
-  &>.el-menu {
-    .svg-icon {
-      margin-right: 16px;
+
+  .el-menu-item,
+  .el-sub-menu__title {
+    &:not(.is-active):hover::before {
+      background: var(--menu-hover, #e5f7ed);
+    }
+
+    &.is-active::before,
+    &.is-active:hover::before {
+      background: #95d475 !important;
     }
   }
 
-  .nest-menu .el-sub-menu>.el-sub-menu__title,
-  .el-menu-item {
-    &:hover {
-      background: var(--menu-hover, #e5f7ed) !important;
-    }
-  }
-
-  // the scroll bar appears when the sub-menu is too long
   >.el-menu--popup {
     max-height: 100vh;
     overflow-y: auto;
@@ -253,4 +288,29 @@
       border-radius: 20px;
     }
   }
+}
+
+// ★ 最关键部分：禁止 .menu-title 单独hover出现背景分割 ★
+.el-menu-item .menu-title,
+.el-sub-menu__title .menu-title {
+  background: none !important;
+}
+
+.el-menu-item.is-active .menu-title:hover,
+.el-sub-menu__title.is-active .menu-title:hover,
+.el-menu-item.is-active .menu-title,
+.el-sub-menu__title.is-active .menu-title {
+  background: none !important;
+  color: #198754 !important;
+  font-weight: bold;
+}
+
+.el-menu-item:not(.is-active):hover .menu-title,
+.el-sub-menu__title:not(.is-active):hover .menu-title {
+  background: none !important;
+}
+
+// 可选：防止文字区域 hover 时光标变成 pointer
+.menu-title {
+  cursor: default;
 }
