@@ -8,12 +8,12 @@
       </transition>
     </router-view>
     <iframe-toggle />
-    <copyright />
+
   </section>
 </template>
 
 <script setup>
-import copyright from "./Copyright/index"
+// import copyright from "./Copyright/index"
 import iframeToggle from "./IframeToggle/index"
 import useTagsViewStore from '@/store/modules/tagsView'
 
