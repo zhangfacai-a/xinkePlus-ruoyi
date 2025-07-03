@@ -1,17 +1,11 @@
 <template>
   <div id="tags-view-container" class="tags-view-container">
     <scroll-pane ref="scrollPaneRef" class="tags-view-wrapper" @scroll="handleScroll">
-      <router-link
-        v-for="tag in visitedViews"
-        :key="tag.path"
-        :data-path="tag.path"
+      <router-link v-for="tag in visitedViews" :key="tag.path" :data-path="tag.path"
         :class="{ 'active': isActive(tag), 'has-icon': tagsIcon }"
-        :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }"
-        class="tags-view-item"
-        :style="activeStyle(tag)"
-        @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
-        @contextmenu.prevent="openMenu(tag, $event)"
-      >
+        :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }" class="tags-view-item"
+        :style="activeStyle(tag)" @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
+        @contextmenu.prevent="openMenu(tag, $event)">
         <svg-icon v-if="tagsIcon && tag.meta && tag.meta.icon && tag.meta.icon !== '#'" :icon-class="tag.meta.icon" />
         {{ tag.title }}
         <span v-if="!isAffix(tag)" @click.prevent.stop="closeSelectedTag(tag)">
@@ -62,7 +56,6 @@ const router = useRouter()
 
 const visitedViews = computed(() => useTagsViewStore().visitedViews)
 const routes = computed(() => usePermissionStore().routes)
-const theme = computed(() => useSettingsStore().theme)
 const tagsIcon = computed(() => useSettingsStore().tagsIcon)
 
 watch(route, () => {
@@ -87,11 +80,14 @@ function isActive(r) {
   return r.path === route.path
 }
 
+// 只用 CSS 变量自动切换高亮/普通
 function activeStyle(tag) {
   if (!isActive(tag)) return {}
   return {
-    "background-color": theme.value,
-    "border-color": theme.value
+    background: "var(--tv-item-active-bg)",
+    border: "1.5px solid var(--tv-item-active-border)",
+    color: "var(--tv-item-active-color)",
+    fontWeight: 600
   }
 }
 
@@ -141,9 +137,8 @@ function initTags() {
   const res = filterAffixTags(routes.value)
   affixTags.value = res
   for (const tag of res) {
-    // Must have tag name
     if (tag.name) {
-       useTagsViewStore().addVisitedView(tag)
+      useTagsViewStore().addVisitedView(tag)
     }
   }
 }
@@ -160,7 +155,6 @@ function moveToCurrentTag() {
     for (const r of visitedViews.value) {
       if (r.path === route.path) {
         scrollPaneRef.value.moveToTarget(r)
-        // when query is different then update
         if (r.fullPath !== route.fullPath) {
           useTagsViewStore().updateVisitedView(route)
         }
@@ -221,10 +215,7 @@ function toLastView(visitedViews, view) {
   if (latestView) {
     router.push(latestView.fullPath)
   } else {
-    // now the default is to redirect to the home page if there is no tags-view,
-    // you can adjust it according to your needs.
     if (view.name === 'Dashboard') {
-      // to reload home page
       router.replace({ path: '/redirect' + view.fullPath })
     } else {
       router.push('/')
@@ -234,10 +225,10 @@ function toLastView(visitedViews, view) {
 
 function openMenu(tag, e) {
   const menuMinWidth = 105
-  const offsetLeft = proxy.$el.getBoundingClientRect().left // container margin left
-  const offsetWidth = proxy.$el.offsetWidth // container width
-  const maxLeft = offsetWidth - menuMinWidth // left boundary
-  const l = e.clientX - offsetLeft + 15 // 15: margin right
+  const offsetLeft = proxy.$el.getBoundingClientRect().left
+  const offsetWidth = proxy.$el.offsetWidth
+  const maxLeft = offsetWidth - menuMinWidth
+  const l = e.clientX - offsetLeft + 15
 
   if (l > maxLeft) {
     left.value = maxLeft
@@ -261,109 +252,88 @@ function handleScroll() {
 
 <style lang="scss" scoped>
 .tags-view-container {
-  height: 34px;
+
+  height: 50px;
   width: 100%;
-  background: var(--tags-bg, #fff);
-  border-bottom: 1px solid var(--tags-item-border, #d8dce5);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
+  background: var(--tv-bg);
+  // border-bottom: 1px solid var(--tv-border);
+  margin-left: 20px;
+  // margin-top: px;
 
   .tags-view-wrapper {
+    height: 100%;
+    padding-left: 0;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+
+
     .tags-view-item {
-      display: inline-block;
+      display: flex;
+      align-items: center;
       position: relative;
       cursor: pointer;
-      height: 26px;
-      line-height: 26px;
-      border: 1px solid var(--tags-item-border, #d8dce5);
-      color: var(--tags-item-text, #495060);
-      background: var(--tags-item-bg, #fff);
-      padding: 0 8px;
-      font-size: 12px;
-      margin-left: 5px;
-      margin-top: 4px;
-
-      &:first-of-type {
-        margin-left: 15px;
-      }
-
-      &:last-of-type {
-        margin-right: 15px;
-      }
+      height: 32px;
+      line-height: 32px;
+      border: 1px solid var(--tv-item-border);
+      color: var(--tv-item-color);
+      background: var(--tv-item-bg);
+      padding: 0 12px;
+      font-size: 13px;
+      border-radius: 10px;
+      margin: 0 8px 0px 0; // 去除外边距
+      box-shadow: none;
+      transition: all .18s;
 
       &.active {
-        background-color: #42b983;
-        color: #fff;
-        border-color: #42b983;
+        background: var(--tv-item-active-bg);
+        border: 1.5px solid var(--tv-item-active-border);
+        color: var(--tv-item-active-color);
+        font-weight: bold;
+        box-shadow: 0 2px 8px 0 rgba(35, 192, 121, 0.04);
+      }
 
-        &::before {
-          content: '';
-          background: #fff;
-          display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          position: relative;
-          margin-right: 5px;
+      .el-icon-close {
+        margin-left: 6px;
+        font-size: 14px;
+        color: var(--tv-item-close);
+        border-radius: 50%;
+
+        &:hover {
+          background-color: var(--tv-menu-hover);
+          color: #e65c41;
         }
+      }
+
+      .svg-icon {
+        font-size: 15px;
+        margin-right: 3px;
       }
     }
   }
 
-  .tags-view-item.active.has-icon::before {
-    content: none !important;
-  }
-
   .contextmenu {
     margin: 0;
-    background: var(--el-bg-color-overlay, #fff);
+    background: var(--tv-menu-bg);
     z-index: 3000;
     position: absolute;
     list-style-type: none;
     padding: 5px 0;
     border-radius: 4px;
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--tags-item-text, #333);
-    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, .3);
-    border: 1px solid var(--el-border-color-light, #e4e7ed);
+    font-size: 13px;
+    color: var(--tv-item-color);
+    box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, .18);
+    border: 1px solid var(--tv-menu-border);
 
     li {
       margin: 0;
-      padding: 7px 16px;
+      padding: 8px 24px;
       cursor: pointer;
+      user-select: none;
+      transition: background .18s;
 
       &:hover {
-        background: var(--tags-item-hover, #eee);
-      }
-    }
-  }
-}
-</style>
-
-<style lang="scss">
-//reset element css of el-icon-close
-.tags-view-wrapper {
-  .tags-view-item {
-    .el-icon-close {
-      width: 16px;
-      height: 16px;
-      vertical-align: 2px;
-      border-radius: 50%;
-      text-align: center;
-      transition: all .3s cubic-bezier(.645, .045, .355, 1);
-      transform-origin: 100% 50%;
-
-      &:before {
-        transform: scale(.6);
-        display: inline-block;
-        vertical-align: -3px;
-      }
-
-      &:hover {
-        background-color: var(--tags-close-hover, #b4bccc);
-        color: #fff;
-        width: 12px !important;
-        height: 12px !important;
+        background: var(--tv-menu-hover);
       }
     }
   }

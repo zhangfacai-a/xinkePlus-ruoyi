@@ -1,6 +1,6 @@
 @use './variables.module.scss' as vars;
 
-// 统一菜单内容布局（让图标和文字同一个flex内，防止hover/active分割）
+// 图标+标题同flex（包裹在 .sidebar-menu-flex 里）
 .sidebar-menu-flex {
   display: flex;
   align-items: center;
@@ -8,7 +8,6 @@
   height: 100%;
 }
 
-// 修正标题
 .menu-title {
   padding-left: 4px;
   background: none !important;
@@ -16,6 +15,7 @@
   line-height: 1;
   display: inline-block;
   transition: color .18s, font-weight .18s, background .18s;
+  cursor: default;
 }
 
 #app {
@@ -60,7 +60,7 @@
       background: var(--sidebar-bg) !important;
       color: var(--sidebar-text);
 
-      // 统一菜单项样式
+      // 一级菜单项/二级菜单标题
       .el-menu-item,
       .el-sub-menu__title {
         position: relative;
@@ -72,7 +72,7 @@
         z-index: 1;
         transition: color .18s, font-weight .18s;
 
-        // 全宽背景块
+        // 全块高亮
         &::before {
           content: '';
           position: absolute;
@@ -85,17 +85,16 @@
           transition: background .18s;
         }
 
-        // 悬浮未激活项
+        // hover（未选中项）
         &:not(.is-active):hover::before {
           background: var(--menu-hover, #e5f7ed);
         }
 
-        // 激活项背景
+        // 激活项
         &.is-active::before {
           background: #95d475 !important;
         }
 
-        // 激活项悬浮也保持激活色
         &.is-active:hover::before {
           background: #95d475 !important;
         }
@@ -111,7 +110,7 @@
         }
       }
 
-      // 子菜单
+      // 嵌套子菜单
       .el-sub-menu .el-menu-item,
       .nest-menu .el-sub-menu__title {
         position: relative;
@@ -171,7 +170,6 @@
     }
   }
 
-  // 侧边栏收起
   .hideSidebar {
     .sidebar-container {
       width: 54px !important;
@@ -207,6 +205,15 @@
     }
 
     .el-menu--collapse {
+      .menu-title {
+        display: none !important;
+      }
+
+      .svg-icon {
+        margin-right: 0 !important;
+        display: inline-block !important;
+      }
+
       .el-sub-menu {
         &>.el-sub-menu__title {
 
@@ -290,27 +297,28 @@
   }
 }
 
-// ★ 最关键部分：禁止 .menu-title 单独hover出现背景分割 ★
+// ★ 防止 .menu-title 单独hover出现分割色块 ★
 .el-menu-item .menu-title,
 .el-sub-menu__title .menu-title {
   background: none !important;
 }
 
-.el-menu-item.is-active .menu-title:hover,
-.el-sub-menu__title.is-active .menu-title:hover,
+// 激活项下无论怎么hover都不会有分割色
 .el-menu-item.is-active .menu-title,
-.el-sub-menu__title.is-active .menu-title {
+.el-menu-item.is-active .menu-title:hover,
+.el-sub-menu__title.is-active .menu-title,
+.el-sub-menu__title.is-active .menu-title:hover {
   background: none !important;
   color: #198754 !important;
   font-weight: bold;
 }
 
+// 非激活项 hover 只变色不变底
 .el-menu-item:not(.is-active):hover .menu-title,
 .el-sub-menu__title:not(.is-active):hover .menu-title {
   background: none !important;
 }
 
-// 可选：防止文字区域 hover 时光标变成 pointer
 .menu-title {
   cursor: default;
 }

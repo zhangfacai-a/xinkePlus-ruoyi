@@ -1,4 +1,4 @@
-// base color（绿色主题）
+// =================== 基础色值 ===================
 $blue: #18b564; // 主色绿
 $light-blue: #52d18e; // 浅绿
 $red: #C03639;
@@ -8,35 +8,34 @@ $tiffany: #4AB7BD;
 $yellow: #FEC171;
 $panGreen: #67c23a; // 备用主色绿
 
-// 默认主题变量（亮色模式绿色主题）
+// =================== 亮色主题变量 ===================
 $menuBg: #f6faf7; // 侧边栏主背景：淡绿色灰
 $menuText: #156441; // 侧边栏文字：深绿色
 $menuActiveText: #18b564; // 侧边栏激活：主色绿
 $menuHover: #e5f7ed; // 侧边栏hover：更浅的绿灰
-$base-menu-background: #f6faf7; // 侧栏背景
+$base-menu-background: #f6faf7;
 $base-menu-color: #156441;
 $base-menu-color-active: #18b564;
 $base-sub-menu-background: #f6faf7;
 $base-sub-menu-hover: #e5f7ed;
 
-// 浅色主题
 $menuLightBg: #f6f8fa;
 $menuLightHover: #e8f8ee;
 $menuLightText: #303133;
 $menuLightActiveText: #18b564;
 
-// 基础变量
+// =================== 基础布局 ===================
 $base-sidebar-width: 200px;
 $sideBarWidth: 200px;
 
-// 菜单暗色变量（保持原生RuoYi配色）
+// =================== 暗色菜单变量 ===================
 $base-menu-color-dark: #bfcbd9;
 $base-menu-color-active-dark: #f4f4f5;
 $base-menu-background-dark: #304156;
 $base-sub-menu-background-dark: #1f2d3d;
 $base-sub-menu-hover-dark: #001528;
 
-// 组件变量
+// =================== 组件色 ===================
 $--color-primary: #18b564;
 $--color-success: #52d18e;
 $--color-warning: #faad14;
@@ -69,8 +68,9 @@ $--color-info: #1890ff;
   colorInfo: $--color-info;
 }
 
-// 亮色模式 CSS变量定义（绿色主题）
+// =================== 亮色模式 CSS变量定义 ===================
 :root {
+  // Layout
   --sidebar-bg: #f6faf7;
   --sidebar-text: #156441;
   --menu-hover: #e5f7ed;
@@ -83,9 +83,23 @@ $--color-info: #1890ff;
   --el-color-primary-light-7: #e8f8ee;
   --el-color-primary-light-8: #f6f8fa;
   --splitpanes-default-bg: #ffffff;
+
+  // tags-view 横向标签相关（亮色）
+  --tv-bg: var(--navbar-bg, #f8f9fa);
+  --tv-border: var(--el-border-color-light, #eaeef3);
+  --tv-item-bg: #fff;
+  --tv-item-border: #e6eaf2;
+  --tv-item-color: #8c98ae;
+  --tv-item-active-bg: #fff;
+  --tv-item-active-border: #20b36b;
+  --tv-item-active-color: #20b36b;
+  --tv-item-close: #bfcbd9;
+  --tv-menu-bg: #fff;
+  --tv-menu-border: #e6eaf2;
+  --tv-menu-hover: #f1f3f6;
 }
 
-// 暗色模式 CSS变量定义（保持原RuoYi风格）
+// =================== 暗色模式 CSS变量定义 ===================
 html.dark {
   --el-bg-color: #141414;
   --el-bg-color-overlay: #1d1e1f;
@@ -121,4 +135,100 @@ html.dark {
 
   --cron-border: #303030;
   --splitpanes-default-bg: #141414;
+
+  // tags-view 横向标签相关（暗色）
+  --tv-bg: var(--tags-bg, #141414);
+  --tv-border: var(--tags-item-border, #303030);
+  --tv-item-bg: var(--tags-item-bg, #1d1e1f);
+  --tv-item-border: var(--tags-item-border, #303030);
+  --tv-item-color: var(--tags-item-text, #d0d0d0);
+  --tv-item-active-bg: var(--tags-item-bg, #1d1e1f);
+  --tv-item-active-border: #20b36b;
+  --tv-item-active-color: #20b36b;
+  --tv-item-close: #64666a;
+  --tv-menu-bg: #23262a;
+  --tv-menu-border: #303030;
+  --tv-menu-hover: #23262a;
+}
+
+// =================== 暗色模式按钮样式覆盖 ===================
+html.dark {
+
+  // el-button 默认
+  .el-button,
+  .el-button--default,
+  .el-button.is-plain {
+    background: #222 !important;
+    color: #d0d0d0 !important;
+    border-color: #434343 !important;
+  }
+
+  .el-button:hover,
+  .el-button:focus,
+  .el-button--default:hover,
+  .el-button--default:focus,
+  .el-button.is-plain:hover,
+  .el-button.is-plain:focus {
+    background: #2c2c2c !important;
+    color: #18b564 !important;
+    border-color: #20b36b !important;
+  }
+
+  // primary 按钮
+  .el-button--primary {
+    background: #113b29 !important;
+    border-color: #18b564 !important;
+    color: #fff !important;
+  }
+
+  .el-button--primary:hover,
+  .el-button--primary:focus {
+    background: #18b564 !important;
+    border-color: #18b564 !important;
+    color: #fff !important;
+  }
+
+  // success/info/warning/danger 适配深色
+  .el-button--success,
+  .el-button--info,
+  .el-button--warning,
+  .el-button--danger {
+    background: #222 !important;
+    color: #d0d0d0 !important;
+    border-color: #434343 !important;
+  }
+
+  .el-button--success:hover,
+  .el-button--success:focus {
+    background: #129251 !important;
+    color: #fff !important;
+    border-color: #18b564 !important;
+  }
+
+  .el-button--danger:hover,
+  .el-button--danger:focus {
+    background: #c03639 !important;
+    color: #fff !important;
+    border-color: #ee4d3d !important;
+  }
+
+  .el-button--warning:hover,
+  .el-button--warning:focus {
+    background: #b8861e !important;
+    color: #fff !important;
+    border-color: #faad14 !important;
+  }
+
+  .el-button--info:hover,
+  .el-button--info:focus {
+    background: #14404b !important;
+    color: #fff !important;
+    border-color: #1890ff !important;
+  }
+
+  // el-table 表头适配
+  .el-table th {
+    background: #18191c !important;
+    color: #bfcbd9 !important;
+  }
 }

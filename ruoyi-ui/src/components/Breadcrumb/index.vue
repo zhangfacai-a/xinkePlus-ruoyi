@@ -2,7 +2,8 @@
   <el-breadcrumb class="app-breadcrumb" separator="/">
     <transition-group name="breadcrumb">
       <el-breadcrumb-item v-for="(item, index) in levelList" :key="item.path">
-        <span v-if="item.redirect === 'noRedirect' || index == levelList.length - 1" class="no-redirect">{{ item.meta.title }}</span>
+        <span v-if="item.redirect === 'noRedirect' || index == levelList.length - 1" class="no-redirect">{{
+          item.meta.title }}</span>
         <a v-else @click.prevent="handleLink(item)">{{ item.meta.title }}</a>
       </el-breadcrumb-item>
     </transition-group>
@@ -33,9 +34,9 @@ function getBreadcrumb() {
     matched = route.matched.filter((item) => item.meta && item.meta.title)
   }
   // 判断是否为首页
-  if (!isDashboard(matched[0])) {
-    matched = [{ path: "/index", meta: { title: "首页" } }].concat(matched)
-  }
+  // if (!isDashboard(matched[0])) {
+  //   matched = [{ path: "/index", meta: { title: "首页" } }].concat(matched)
+  // }
   levelList.value = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
 }
 function findPathNum(str, char = "/") {
@@ -90,6 +91,8 @@ getBreadcrumb()
   line-height: 50px;
   margin-left: 8px;
 
+
+  // margin-top: 10px;
   .no-redirect {
     color: #97a8be;
     cursor: text;

@@ -1,10 +1,5 @@
 <template>
-  <el-scrollbar
-    ref="scrollContainer"
-    :vertical="false"
-    class="scroll-container"
-    @wheel.prevent="handleScroll"
-  >
+  <el-scrollbar ref="scrollContainer" :vertical="false" class="scroll-container" @wheel.prevent="handleScroll">
     <slot />
   </el-scrollbar>
 </template>
@@ -64,24 +59,30 @@ function moveToTarget(currentTag) {
     let nextTag = null
     for (const k in tagListDom) {
       if (k !== 'length' && Object.hasOwnProperty.call(tagListDom, k)) {
-        if (tagListDom[k].dataset.path === visitedViews.value[currentIndex - 1].path) {
+        if (tagListDom[k].dataset.path === visitedViews.value[currentIndex - 1]?.path) {
           prevTag = tagListDom[k]
         }
-        if (tagListDom[k].dataset.path === visitedViews.value[currentIndex + 1].path) {
+        if (tagListDom[k].dataset.path === visitedViews.value[currentIndex + 1]?.path) {
           nextTag = tagListDom[k]
         }
       }
     }
 
     // the tag's offsetLeft after of nextTag
-    const afterNextTagOffsetLeft = nextTag.offsetLeft + nextTag.offsetWidth + tagAndTagSpacing.value
+    if (nextTag) {
+      const afterNextTagOffsetLeft = nextTag.offsetLeft + nextTag.offsetWidth + tagAndTagSpacing.value
+      if (afterNextTagOffsetLeft > $scrollWrapper.scrollLeft + $containerWidth) {
+        $scrollWrapper.scrollLeft = afterNextTagOffsetLeft - $containerWidth
+        return
+      }
+    }
 
     // the tag's offsetLeft before of prevTag
-    const beforePrevTagOffsetLeft = prevTag.offsetLeft - tagAndTagSpacing.value
-    if (afterNextTagOffsetLeft > $scrollWrapper.scrollLeft + $containerWidth) {
-      $scrollWrapper.scrollLeft = afterNextTagOffsetLeft - $containerWidth
-    } else if (beforePrevTagOffsetLeft < $scrollWrapper.scrollLeft) {
-      $scrollWrapper.scrollLeft = beforePrevTagOffsetLeft
+    if (prevTag) {
+      const beforePrevTagOffsetLeft = prevTag.offsetLeft - tagAndTagSpacing.value
+      if (beforePrevTagOffsetLeft < $scrollWrapper.scrollLeft) {
+        $scrollWrapper.scrollLeft = beforePrevTagOffsetLeft
+      }
     }
   }
 }
@@ -91,17 +92,27 @@ defineExpose({
 })
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
+
+
 .scroll-container {
-  white-space: nowrap;
-  position: relative;
-  overflow: hidden;
   width: 100%;
+
+  // 横向排列的关键
+  :deep(.el-scrollbar__view) {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    height: 100%;
+    white-space: nowrap;
+  }
+
   :deep(.el-scrollbar__bar) {
     bottom: 0px;
   }
+
   :deep(.el-scrollbar__wrap) {
-    height: 39px;
+    height: 50px;
   }
 }
 </style>
