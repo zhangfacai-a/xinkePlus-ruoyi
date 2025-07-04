@@ -11,8 +11,8 @@
         <template v-if="appStore.device !== 'mobile'">
           <el-tooltip content="主题模式" effect="dark" placement="bottom">
             <div class="right-menu-item hover-effect theme-switch-wrapper" @click="toggleTheme">
-              <svg-icon v-if="settingsStore.isDark" icon-class="sunny" />
-              <svg-icon v-if="!settingsStore.isDark" icon-class="moon" />
+              <svg-icon v-if="settingsStore.isDark" icon-class="sunny" class="green-bg" />
+              <svg-icon v-if="!settingsStore.isDark" icon-class="moon" class="green-bg" />
             </div>
           </el-tooltip>
         </template>
@@ -88,6 +88,20 @@ function toggleTheme() {
 </script>
 
 <style lang="scss" scoped>
+.green-bg {
+  background: #e5f7ed;
+  border-radius: 8px;
+  padding: 6px;
+  /* 适当增加内边距以适配更大icon */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  /* 调整图标大小，建议 24~32px 根据需要改 */
+}
+
+
+
 .navbar {
   height: 30px;
   width: 100%;
@@ -131,6 +145,8 @@ function toggleTheme() {
     .right-menu {
       display: flex;
       align-items: center;
+      margin-right: 30px;
+      margin-top: 10px;
 
       .right-menu-item {
         display: flex;

@@ -35,12 +35,13 @@
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table v-loading="loading" :data="recordsList" @selection-change="handleSelectionChange" style="width: 100%">
+    <el-table v-loading="loading" :data="recordsList" @selection-change="handleSelectionChange" style="width: 100%;"
+      height="calc(100vh - 240px)">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="WPS-ID" align="center" prop="fillId" width="80" />
+      <!-- <el-table-column label="WPS-ID" align="center" prop="fillId" width="80" /> -->
       <el-table-column label="主播" align="center" prop="nickname" width="55" />
       <el-table-column label="直播间" align="center" prop="roomName" />
-      <el-table-column label="直播时间" align="center" width="180">
+      <el-table-column label="直播时间" align="center">
         <template #default="scope">
           <div>{{ parseTime(scope.row.liveDate, '{y}/{m}/{d}') }}</div>
           <div>
@@ -55,7 +56,7 @@
       <el-table-column label="观看人数" align="center" prop="totalViewers" />
       <el-table-column label="主播场观" align="center" prop="roomViewers" />
       <el-table-column label="成交人数" align="center" prop="dealUsers" />
-      <el-table-column label="销售金额" align="center" prop="salesAmount" width="120">
+      <el-table-column label="销售金额" align="center" prop="salesAmount">
         <template #default="scope">
           <span>{{ formatMoney(scope.row.salesAmount) }}</span>
         </template>
@@ -69,7 +70,7 @@
           <span>{{ scope.row.remark || '-' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
             v-hasPermi="['system:records:edit']">修改</el-button>
