@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LiveRecordsStatMapper">
+
+    <resultMap id="LiveStatUserVoResult" type="com.ruoyi.system.vo.LiveStatUserVo">
+        <result property="nickname" column="nickname"/>
+        <result property="roomNames" column="room_names"/>
+        <result property="livePeriods" column="live_periods"/>
+        <result property="totalMinutes" column="total_minutes"/>
+        <result property="remarks" column="remarks"/>
+    </resultMap>
+
+    <select id="getYesterdayLiveStat" resultMap="LiveStatUserVoResult">
+        SELECT
+            ln.nickname AS nickname,
+            GROUP_CONCAT(DISTINCT rn.room_name SEPARATOR '+') AS room_names,
+            GROUP_CONCAT(
+                    CONCAT(
+                            LPAD(FLOOR(lr.start_time/60),2,'0'), ':', LPAD(MOD(lr.start_time,60),2,'0'),
+                            '-',
+                            LPAD(FLOOR(lr.end_time/60),2,'0'), ':', LPAD(MOD(lr.end_time,60),2,'0')
+                    )
+                        ORDER BY lr.start_time SEPARATOR ','
+            ) AS live_periods,
+            SUM(IFNULL(lr.live_minutes,0)) AS total_minutes,
+            GROUP_CONCAT(DISTINCT lr.remark SEPARATOR ',') AS remarks
+        FROM live_records lr
+                 LEFT JOIN live_nicknames ln ON lr.nickname_id = ln.id
+                 LEFT JOIN live_rooms rn ON lr.room_id = rn.id
+        WHERE lr.live_date &gt;= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY))
+          AND lr.live_date &lt; UNIX_TIMESTAMP(CURDATE())
+        GROUP BY ln.nickname
+        HAVING total_minutes &lt; 500
+    </select>
+
+</mapper>

@@ -42,7 +42,6 @@ public class LiveRecordsServiceImpl implements ILiveRecordsService
     /**
      * 查询上播时间列表
      *
-     * @param liveRecords 上播时间查询条件（DO）
      * @return 上播时间集合（VO 列表）
      */
     @Override

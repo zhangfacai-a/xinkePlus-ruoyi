@@ -2,7 +2,7 @@
   <div class="dashboard-root">
     <!-- 顶部统计卡片 -->
     <div class="dashboard-top">
-      <div class="dashboard-card" v-for="item in statList" :key="item.title">
+      <div class="dashboard-card" v-for="item in statCardList" :key="item.title">
         <div>
           <div class="dashboard-card-title">{{ item.title }}</div>
           <div class="dashboard-card-value">{{ item.value }}</div>
@@ -27,20 +27,18 @@
         <div class="dashboard-summary">
           <div>用户概述</div>
           <div class="dashboard-summary-sub">比上周 <span class="up">+23%</span></div>
-          <div class="dashboard-summary-desc">
-            我们为您创建了多个选项，可将它们组合在一起并定制为优雅完美的页面
-          </div>
+
           <div class="dashboard-summary-grid">
             <div>
-              <div class="label">总用户量</div>
+              <div class="label">昨日提交次数</div>
               <div class="value">32k</div>
             </div>
             <div>
-              <div class="label">总访问量</div>
+              <div class="label">昨日总直播时长</div>
               <div class="value">128k</div>
             </div>
             <div>
-              <div class="label">日访问量</div>
+              <div class="label">昨日总销售金额</div>
               <div class="value">1.2k</div>
             </div>
             <div>
@@ -58,70 +56,30 @@
       </div>
     </div>
 
-    <!-- 下方列表区 -->
+    <!-- 下方列表区：昨日直播时长<500分钟主播展示 -->
     <div class="dashboard-bottom">
-      <!-- 新用户 -->
+      <!-- 昨日直播时长<500分钟主播统计 -->
       <div class="user-table-card">
         <div class="user-table-header">
           <div>
-            <div class="title">新用户</div>
-            <div class="sub">这个月增长 <span class="up">+20%</span></div>
+            <div class="title">昨日低直播时长主播</div>
+            <div class="sub">昨日统计 &lt; 500 分钟</div>
           </div>
-          <el-radio-group v-model="tab" size="small" class="user-table-tabs">
-            <el-radio-button label="本月" />
-            <el-radio-button label="上月" />
-            <el-radio-button label="今年" />
-          </el-radio-group>
         </div>
-        <el-table :data="userList" border :header-cell-style="{ background: 'none' }" class="user-table"
-          style="width:100%;">
-          <el-table-column label="头像" width="60">
+        <el-table :data="statList" border class="user-table" style="width:100%;">
+          <el-table-column prop="nickname" label="姓名" width="90" />
+          <el-table-column prop="roomNames" label="直播间" />
+          <el-table-column prop="livePeriods" label="直播时段" />
+          <el-table-column prop="totalMinutes" label="直播时长" width="140" />
+          <el-table-column label="进度" width="170">
             <template #default="scope">
-              <el-avatar :src="scope.row.avatar" :size="40" />
+              <el-progress :percentage="Math.min(100, Math.round(scope.row.totalMinutes / 500 * 100))"
+                :color="progressColor(scope.row.totalMinutes)" :text-inside="true" :stroke-width="16"
+                style="width:120px" />
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="" width="100">
-            <template #default="scope">
-              <span class="user-name">{{ scope.row.name }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="area" label="地区" width="80" />
-          <el-table-column prop="sex" label="性别" width="60">
-            <template #default="scope">
-              {{ scope.row.sex === '1' ? '男' : '女' }}
-            </template>
-          </el-table-column>
-          <el-table-column label="进度">
-            <template #default="scope">
-              <el-progress :percentage="scope.row.progress" :color="progressColor(scope.$index)" :stroke-width="6"
-                show-text style="width:140px;" />
-            </template>
-          </el-table-column>
+          <el-table-column prop="remarks" label="备注" />
         </el-table>
-      </div>
-      <!-- 动态 -->
-      <div class="dashboard-list-card">
-        <div class="dashboard-list-title">动态 <span class="dashboard-growth up">新增 +6</span></div>
-        <ul class="dashboard-activity">
-          <li v-for="(item, i) in activityList" :key="i">
-            <span class="user">{{ item.user }}</span>
-            <span v-html="item.action"></span>
-            <span class="time">{{ item.time }}</span>
-          </li>
-        </ul>
-      </div>
-      <!-- 待办事项 -->
-      <div class="dashboard-list-card">
-        <div class="dashboard-list-title">代办事项 <span class="dashboard-growth down">待处理 3</span></div>
-        <ul class="dashboard-todo">
-          <li v-for="todo in todoList" :key="todo.text">
-            <span>{{ todo.text }}</span>
-            <span class="time">{{ todo.time }}</span>
-            <el-icon v-if="todo.done" color="#18b564" style="margin-left:6px;">
-              <CircleCheckFilled />
-            </el-icon>
-          </li>
-        </ul>
       </div>
     </div>
   </div>
@@ -131,54 +89,44 @@
 import { ref, onMounted, nextTick, computed } from 'vue'
 import * as echarts from 'echarts'
 import { User, UserFilled, Promotion, TrendCharts, CircleCheckFilled } from '@element-plus/icons-vue'
+import { listNicknames } from '@/api/live/stat' // 使用你的接口
 
-// 顶部卡片数据
-const statList = [
-  { title: '总访问次数', value: 9120, change: 20, icon: TrendCharts },
-  { title: '在线访客数', value: 182, change: 10, icon: User },
-  { title: '点击量', value: 9520, change: -12, icon: Promotion },
-  { title: '新用户', value: 156, change: 30, icon: UserFilled },
+// 顶部卡片区
+const statCardList = [
+  { title: '月度总直播时长', value: 9120, change: 20, icon: TrendCharts },
+  { title: '月度总销售金额', value: 182, change: 10, icon: User },
+  { title: '主播', value: 9520, change: -12, icon: Promotion },
+  { title: '直播间', value: 156, change: 30, icon: UserFilled },
 ]
-const iconColor = computed(() => 'var(--el-color-primary, #18b564)')
-const progressColors = [
-  '#5B8FF9', // 蓝
-  '#5AD8A6', // 青
-  '#F6BD16', // 橙
-  '#5B8FF9', // 蓝
-  '#E8684A', // 红橙
-  '#5AD8A6', // 青
-]
-function progressColor(idx) {
-  return progressColors[idx % progressColors.length]
+const iconColor = computed(() => 'var(--el-color-success-dark-2, #18b564)')
+
+// 进度条颜色
+function progressColor(val) {
+  if (val < 200) return '#5AD8A6'
+  if (val < 350) return '#5B8FF9'
+  if (val < 450) return '#F6BD16'
+  return '#E8684A'
 }
 
-// 新用户列表
-const tab = ref('本月')
-const userList = [
-  { avatar: 'https://randomuser.me/api/portraits/men/32.jpg', name: '中小鱼', area: '北京', sex: '2', progress: 60 },
-  { avatar: 'https://randomuser.me/api/portraits/men/33.jpg', name: '何小荷', area: '深圳', sex: '1', progress: 20 },
-  { avatar: 'https://randomuser.me/api/portraits/men/34.jpg', name: '諸榮淞', area: '上海', sex: '1', progress: 60 },
-  { avatar: 'https://randomuser.me/api/portraits/women/65.jpg', name: '发呆草', area: '长沙', sex: '2', progress: 50 },
-  { avatar: 'https://randomuser.me/api/portraits/women/15.jpg', name: '甜简', area: '浙江', sex: '2', progress: 70 },
-  { avatar: 'https://randomuser.me/api/portraits/men/45.jpg', name: '冷月呆呆', area: '湖北', sex: '1', progress: 90 },
-]
+// 统计列表
+const statList = ref([])
 
-// 动态列表
-const activityList = [
-  { user: '中小鱼', action: '关注了 <b style="color:#18b564;">许梓洵</b>', time: '5分钟前' },
-  { user: '何小荷', action: '发表文章 <span class="tag">Vue3</span> <span class="tag">Typescript</span> <span class="tag">Vite</span>', time: '10分钟前' },
-  { user: '许梓洵', action: '评论了 <b style="color:#18b564;">设计专栏</b>', time: '20分钟前' },
-  { user: '发呆草', action: '收藏了 <b style="color:#18b564;">UI 灵感集</b>', time: '30分钟前' },
-  { user: '甜简', action: '点赞了 <b style="color:#18b564;">产品思考</b>', time: '50分钟前' },
-  { user: '冷月呆呆', action: '加入了 <b style="color:#18b564;">设计交流群</b>', time: '1小时前' },
-]
+onMounted(() => {
+  // 拉取昨日直播低时长主播
+  listNicknames().then(res => {
+    console.log('昨日低直播时长主播数据：', res)
+    statList.value = res || []
+  })
 
-// 待办事项
-const todoList = [
-  { text: '查看今天工作内容', time: '上午 09:30', done: true },
-  { text: '回复邮件', time: '上午 10:30', done: true },
-  { text: '工作汇报整理', time: '上午 11:00', done: false },
-]
+  nextTick(() => {
+    renderCharts()
+    // 监听亮/暗色模式切换
+    const observer = new MutationObserver(renderCharts)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+  })
+})
+
+
 
 // 图表
 const barRef = ref()
@@ -186,8 +134,8 @@ const lineRef = ref()
 function getVars() {
   const style = getComputedStyle(document.documentElement)
   return {
-    main: style.getPropertyValue('--el-color-primary') || '#18b564',
-    mainLight: style.getPropertyValue('--el-color-primary-light-3') || '#52d18e',
+    main: style.getPropertyValue('#52d18e') || '#18b564',
+    mainLight: style.getPropertyValue('--el-color-success-dark-2') || '#52d18e',
     bg: style.getPropertyValue('--el-bg-color') || '#fff',
     axis: style.getPropertyValue('--el-border-color-light') || '#eee',
     text: style.getPropertyValue('--el-text-color-regular') || '#666',
@@ -268,15 +216,6 @@ function renderCharts() {
   })
   window.addEventListener('resize', () => { bar.resize(); line.resize(); })
 }
-
-onMounted(() => {
-  nextTick(() => {
-    renderCharts()
-    // 监听亮/暗色模式切换
-    const observer = new MutationObserver(renderCharts)
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-  })
-})
 </script>
 
 <style scoped>
