@@ -63,7 +63,7 @@
         <div class="user-table-header">
           <div>
             <div class="title">昨日低直播时长主播</div>
-            <div class="sub">昨日统计 &lt; 500 分钟</div>
+            <div class="sub">昨日统计 &lt; 300 分钟</div>
           </div>
         </div>
         <el-table :data="statList" border class="user-table" style="width:100%;">
@@ -73,7 +73,7 @@
           <el-table-column prop="totalMinutes" label="直播时长" width="140" />
           <el-table-column label="进度" width="170">
             <template #default="scope">
-              <el-progress :percentage="Math.min(100, Math.round(scope.row.totalMinutes / 500 * 100))"
+              <el-progress :percentage="Math.min(100, Math.round(scope.row.totalMinutes / 300 * 100))"
                 :color="progressColor(scope.row.totalMinutes)" :text-inside="true" :stroke-width="16"
                 style="width:120px" />
             </template>

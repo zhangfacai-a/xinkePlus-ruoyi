@@ -32,7 +32,7 @@
         WHERE lr.live_date &gt;= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY))
           AND lr.live_date &lt; UNIX_TIMESTAMP(CURDATE())
         GROUP BY ln.nickname
-        HAVING total_minutes &lt; 500
+        HAVING total_minutes &lt; 300
     </select>
 
 </mapper>
